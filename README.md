@@ -2,6 +2,8 @@
 
 A Machine Learning Framework
 
+![SolverTrainer Framework](http://dev.cranesfocus.com/resources/solvertrainer.png)
+
 ### Philosophy
 
 * Easy to use for developers
