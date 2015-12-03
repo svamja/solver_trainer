@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import os
 project_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  + '/' + 'solvertrainer'
 
@@ -10,6 +12,7 @@ TOP = 0
 BOTTOM = 1
 LEFT = 2
 RIGHT = 3
+direction_map = ["top", "bottom", "left", "right"]
 
 class SlidingPuzzleStateManager:
 
@@ -32,14 +35,19 @@ class SlidingPuzzleStateManager:
         # there is only one allowed operation: "move"
         # it takes one argument, which has 4 possible options: top, bottom, left or right
         # this is mapped to an integer range 0 to 4
-        return [
-            {
-                "name" : "move",
-                "arguments" : [
-                    { "type" : "list", "items" : self.get_allowed_directions() }
-                ]
-            }
-        ]
+        # return [
+        #     {
+        #         "name" : "move",
+        #         "arguments" : [
+        #             { "type" : "list", "items" : self.get_allowed_directions() }
+        #         ]
+        #     }
+        # ]
+        directions = self.get_allowed_directions()
+        operations = []
+        for direction in directions:
+            operations.append({ "name" : direction_map[direction] })
+        return operations
 
     # move the blank tile to top/bottom/left/right
     # check if direction is allowed, ie if tile is on the edge
@@ -52,6 +60,19 @@ class SlidingPuzzleStateManager:
         new_i = [i-4, i+4, i-1, i+1][direction]
         self.matrix[i], self.matrix[new_i] = self.matrix[new_i], self.matrix[i]
         return True
+
+    def top(self):
+        return self.move(TOP)
+
+    def bottom(self):
+        return self.move(BOTTOM)
+
+    def left(self):
+        return self.move(LEFT)
+
+    def right(self):
+        return self.move(RIGHT)
+
 
     # this is the key part:
     # on solution, when all tiles are its position, return 0
@@ -81,7 +102,16 @@ def solve_matrix(matrix):
     state_manager.change_state(matrix)
     # state_manager.print_state()
     solution = solver.solve(state_manager)
-    return { "matrix" : matrix, "solution": solution }
+    simple_path = []
+    for operation in solution["path"]:
+        simple_path.append(operation["operation"])
+        # direction = operation["arguments"][0]
+        # simple_path.append(direction_map[direction])
+    if(solution["distance"] == 0):
+        status = "success"
+    else:
+        status = "failure"
+    return { "status" : status, "path": simple_path }
 
 # DEBUG code to run from command line
 if __name__ == "__main__":
