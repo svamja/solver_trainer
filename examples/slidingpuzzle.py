@@ -91,6 +91,14 @@ class SlidingPuzzleStateManager:
             distance += tile_distance
         return distance
 
+    def get_state_code(self):
+        # convert the state to 4-byte integer
+        code = 0
+        for i in range(15):
+            code |= self.matrix[i]
+        return code
+
+
     #DEBUG method
     def print_state(self):
         print(self.matrix)

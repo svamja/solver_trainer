@@ -16,9 +16,7 @@ def hello():
 @route('/slidingpuzzle', method=['OPTIONS', 'POST'])
 def post_slidingpuzzle():
     if request.method == 'OPTIONS':
-        print("options received")
         return {}
-    print("post received")
     data = request.json
     print(data)
     response = slidingpuzzle.solve_matrix(data["matrix"])

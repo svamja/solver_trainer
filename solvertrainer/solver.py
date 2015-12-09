@@ -5,18 +5,23 @@ advancement_size = 100
 alternative_size = 10
 step_range = (1, 10)
 attempt_size = 10
+stagnant_size = 10
 
 def do_attempt(state_manager):
     prev_distance = 999
     attempt = { "path": [] }
+    stagnant_length = 0
     for i in range(advancement_size):
         alternative = do_try_alternatives(state_manager)
-        if(alternative["distance"] < prev_distance):
+        if(alternative["distance"] < prev_distance or stagnant_length >= stagnant_size):
             attempt["path"] += alternative["path"]
             attempt["distance"] = alternative["distance"]
             state_manager = alternative["state_manager"]
             if(attempt["distance"] == 0): break
             prev_distance = attempt["distance"]
+            stagnant_length = 0
+        else:
+            stagnant_length += 1
     return attempt
 
 def do_try_alternatives(state_manager):
@@ -50,7 +55,13 @@ def do_take_step(state_manager):
                 arguments.append(random.choice(arg["items"]))
     getattr(state_manager, operation["name"])(*arguments)
     distance = state_manager.get_distance()
-    step = { "operation" : operation["name"], "arguments" : arguments, "distance" : distance }
+    code = state_manager.get_state_code()
+    step = { 
+        "operation" : operation["name"], 
+        "arguments" : arguments, 
+        "distance" : distance, 
+        "code" : code 
+    }
     # print(state_manager.matrix)
     return step
 
